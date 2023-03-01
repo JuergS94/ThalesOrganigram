@@ -1,0 +1,75 @@
+﻿<UserControl x:Class="OrganigramService.View.OrganigramView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrganigramService.View"
+             xmlns:load="clr-namespace:OrganigramService.ViewModel"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
+             xmlns:startUp="clr-namespace:OrganigramService.StartUp"
+             startUp:ViewModelLocator.AutoWireViewModel="true">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="AddPersonButton" Content="AddPerson" Command="{Binding Path=AddPersonCommand}"  Grid.Row="1" Grid.Column="3" Margin="10,20,10,0" VerticalAlignment="Top"/>
+        <Label x:Name="NameAdd" Content="Name:" Grid.Row="1" Grid.Column="4" Margin="0,0,0,0"/>
+        <TextBox x:Name="PersonTextBox" Text="{Binding NameOfPerson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="4" Margin="5,20,5,80"/>
+        <Label x:Name="RoleNameLabel" Content="Name of Role:" Grid.Row="1" Grid.Column="4" Margin="0,35,0,0"/>
+        <ComboBox ItemsSource="{Binding Path=Roles}" SelectedItem="{Binding SelectedRole, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="4" Margin="5,55,5,45"/>
+        <Label x:Name="ReportsToLabel"  Content="ReportsTo:" Grid.Row="1" Grid.Column="4" Margin="0,70,0,0"/>
+        <ComboBox x:Name="ReportsToComboBox" ItemsSource="{Binding Path=PersonsToReport}" SelectedItem="{Binding SelectedPersonToReportTo}" Grid.Row="1" Grid.Column="4" Margin="5,90,5,10"/>
+        <Label x:Name="TreeViewLabel" Content="Organigram:" Grid.Row="1" Grid.Column="1"/>
+        <Label x:Name="PersonsWithNoRole"  Content="Persons with no Role:" Grid.Row="2" Grid.Column="4" Margin="0,0,0,0"/>
+        <ComboBox x:Name="PersonsWithNoRoleComboBox" ItemsSource="{Binding Path=PersonsWithNoRole}" SelectedItem="{Binding NameOfPerson}" Grid.Row="2" Grid.Column="4" Margin="5,20,5,80"/>
+        <Button x:Name="DeleteButton" Command="{Binding Path=RemovePersonCommand}" Content="DeletePerson"  Grid.Row="3" Grid.Column="2" Margin="5,20,11,0" VerticalAlignment="Top"/>
+        <Button x:Name="UpdateOrgButton" Command="{Binding Path=UpdateOrgCommand}" Content="UpdateOrganization"  Grid.Row="3" Grid.Column="1" Margin="5,20,11,0" VerticalAlignment="Top"/>
+
+        <Button x:Name="UpdatePerson" Content="UpdatePerson" Command="{Binding Path=UpdatePersonCommand}"  Grid.Row="1" Grid.Column="3" Margin="10,55,10,0" VerticalAlignment="Top"/>
+
+        <TreeView ItemsSource="{Binding FirstGeneration}" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="5,20,12,0">
+            
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text=" " />
+                        <TextBlock Text="{Binding JobTitle}" Foreground="Green" />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedItemChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectedPersonCommand}" 
+                                           CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TreeView}}}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TreeView>
+    </Grid>
+</UserControl>
